@@ -1,0 +1,90 @@
+service:
+  port:   #监听端口
+    http: 88
+    grpc: 50052
+  profile:
+    rate: 1
+
+db:
+  hr:
+    write:
+      host: mysql.infra
+      port: 3306
+      user: root
+      pass: a1DEYaA4dn
+      name: hr
+    read:
+      - host: mysql.infra
+        port: 3306
+        user: root
+        pass: a1DEYaA4dn
+        name: hr
+      - host: mysql.infra
+        port: 3306
+        user: root
+        pass: a1DEYaA4dn
+        name: hr
+
+  bbs:
+    write:
+      host: mysql.infra
+      port: 3306
+      user: root
+      pass: a1DEYaA4dn
+      name: bbs
+    read:
+      - host: mysql.infra
+        port: 3306
+        user: root
+        pass: a1DEYaA4dn
+        name: bbs
+      - host: mysql.infra
+        port: 3306
+        user: root
+        pass: a1DEYaA4dn
+        name: bbs
+
+redis:
+  addr: 'redis-master.infra:6379'
+  pass: ''
+  db: 0
+
+kafka:
+  business:
+    producer:
+      - 'kafka.infra:9092'
+    consumer:
+      - 'kafka.infra:9092'
+    topic:
+      createGreet: create_greet
+      updateGreetCount: update_greet_count
+
+  bigdata:
+    producer:
+      - 'kafka.infra:9092'
+    consumer:
+      - 'kafka.infra:9092'
+    topic:
+      createGreet: create_greet
+      updateGreetCount: update_greet_count
+
+tracing:
+  agent: '172.16.50.50:6831'
+  type: const
+  param: 1
+  name:
+    client: imind-greet-api-cli
+    server: imind-greet-api-srv
+
+log:
+  path: './logs/ms.log'
+  level: -1
+  age: 7
+  size: 128
+  backup: 30
+  compress: true
+  format: json
+rpc:
+  greet:
+    service: greet
+    port: 50051
