@@ -7,14 +7,14 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/imind-lab/greet-api/server"
+	"github.com/imind-lab/greeter-api/server"
 )
 
 var cfgFile string
 
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "Run the gRPC Greet-api server",
+	Short: "Run the gRPC Greeter-api server",
 	Run: func(cmd *cobra.Command, args []string) {
 		defer func() {
 			if err := recover(); err != nil {

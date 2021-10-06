@@ -70,9 +70,9 @@ enum Code {
   // Some requested entity (e.g., file or directory) was not found.
   //
   // Note to server developers: if a request is denied for an entire class
-  // of greets, such as gradual feature rollout or undocumented whitelist,
-  // `NOT_FOUND` may be used. If a request is denied for some greets within
-  // a class of greets, such as greet-based access control, `PERMISSION_DENIED`
+  // of greeters, such as gradual feature rollout or undocumented whitelist,
+  // `NOT_FOUND` may be used. If a request is denied for some greeters within
+  // a class of greeters, such as greeter-based access control, `PERMISSION_DENIED`
   // must be used.
   //
   // HTTP Mapping: 404 Not Found
@@ -102,7 +102,7 @@ enum Code {
   // HTTP Mapping: 401 Unauthorized
   UNAUTHENTICATED = 16;
 
-  // Some resource has been exhausted, perhaps a per-greet quota, or
+  // Some resource has been exhausted, perhaps a per-greeter quota, or
   // perhaps the entire file system is out of space.
   //
   // HTTP Mapping: 429 Too Many Requests

@@ -187,14 +187,14 @@ message Http {
 //         option (google.api.http) = {
 //           get: "/v1/messages/{message_id}"
 //           additional_bindings {
-//             get: "/v1/greets/{greet_id}/messages/{message_id}"
+//             get: "/v1/greeters/{greeter_id}/messages/{message_id}"
 //           }
 //         };
 //       }
 //     }
 //     message GetMessageRequest {
 //       string message_id = 1;
-//       string greet_id = 2;
+//       string greeter_id = 2;
 //     }
 //
 //
@@ -204,7 +204,7 @@ message Http {
 // HTTP | RPC
 // -----|-----
 // `GET /v1/messages/123456` | `GetMessage(message_id: "123456")`
-// `GET /v1/greets/me/messages/123456` | `GetMessage(greet_id: "me" message_id: "123456")`
+// `GET /v1/greeters/me/messages/123456` | `GetMessage(greeter_id: "me" message_id: "123456")`
 //
 // # Rules for HTTP mapping
 //

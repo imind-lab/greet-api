@@ -8,24 +8,24 @@
 package service
 
 import (
-	greet_api "github.com/imind-lab/greet-api/server/proto/greet-api"
-	"github.com/imind-lab/greet/server/proto/greet"
+	greeter_api "github.com/imind-lab/greeter-api/server/proto/greeter-api"
+	"github.com/imind-lab/greeter/server/proto/greeter"
 )
 
-func GreetMap(pos []*greet.Greet, fn func(*greet.Greet) *greet_api.Greet) []*greet_api.Greet {
-	var dtos []*greet_api.Greet
+func GreeterMap(pos []*greeter.Greeter, fn func(*greeter.Greeter) *greeter_api.Greeter) []*greeter_api.Greeter {
+	var dtos []*greeter_api.Greeter
 	for _, po := range pos {
 		dtos = append(dtos, fn(po))
 	}
 	return dtos
 }
 
-func GreetGw2Srv(po *greet_api.Greet) *greet.Greet {
+func GreeterGw2Srv(po *greeter_api.Greeter) *greeter.Greeter {
 	if po == nil {
 		return nil
 	}
 
-	dto := &greet.Greet{}
+	dto := &greeter.Greeter{}
 	dto.Id = po.Id
 	dto.Name = po.Name
 	dto.ViewNum = po.ViewNum
@@ -37,12 +37,12 @@ func GreetGw2Srv(po *greet_api.Greet) *greet.Greet {
 	return dto
 }
 
-func GreetSrv2Gw(dto *greet.Greet) *greet_api.Greet {
+func GreeterSrv2Gw(dto *greeter.Greeter) *greeter_api.Greeter {
 	if dto == nil {
 		return nil
 	}
 
-	po := &greet_api.Greet{}
+	po := &greeter_api.Greeter{}
 	po.Id = dto.Id
 	po.Name = dto.Name
 	po.ViewNum = dto.ViewNum
@@ -54,26 +54,26 @@ func GreetSrv2Gw(dto *greet.Greet) *greet_api.Greet {
 	return po
 }
 
-func GreetListSrv2Gw(dto *greet.GreetList) *greet_api.GreetList {
+func GreeterListSrv2Gw(dto *greeter.GreeterList) *greeter_api.GreeterList {
 	if dto == nil {
 		return nil
 	}
 
-	po := &greet_api.GreetList{}
+	po := &greeter_api.GreeterList{}
 	po.Total = dto.Total
 	po.TotalPage = dto.TotalPage
 	po.CurPage = dto.CurPage
-	po.Datalist = GreetMap(dto.Datalist, GreetSrv2Gw)
+	po.Datalist = GreeterMap(dto.Datalist, GreeterSrv2Gw)
 
 	return po
 }
 
-func ErrorSrv2Gw(err *greet.Error) *greet_api.Error {
+func ErrorSrv2Gw(err *greeter.Error) *greeter_api.Error {
 	if err == nil {
 		return nil
 	}
 
-	po := &greet_api.Error{}
+	po := &greeter_api.Error{}
 	po.Message = err.Message
 	po.Code = err.Code
 

@@ -158,7 +158,7 @@ message ResourceInfo {
   string resource_name = 2;
 
   // The owner of the resource (optional).
-  // For example, "greet:<owner email>" or "project:<Google developer project
+  // For example, "greeter:<owner email>" or "project:<Google developer project
   // id>".
   string owner = 3;
 
@@ -187,7 +187,7 @@ message Help {
   repeated Link links = 1;
 }
 
-// Provides a localized error message that is safe to return to the greet
+// Provides a localized error message that is safe to return to the greeter
 // which can be attached to an RPC error.
 message LocalizedMessage {
   // The locale used following the specification defined at

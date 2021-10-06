@@ -29,7 +29,7 @@ option objc_class_prefix = "RPC";
 // programming environments, including REST APIs and RPC APIs. It is used by
 // [gRPC](https://github.com/grpc). The error model is designed to be:
 //
-// - Simple to use and understand for most greets
+// - Simple to use and understand for most greeters
 // - Flexible enough to meet unexpected needs
 //
 // # Overview
@@ -38,7 +38,7 @@ option objc_class_prefix = "RPC";
 // and error details. The error code should be an enum value of
 // [google.rpc.Code][google.rpc.Code], but it may accept additional error codes if needed.  The
 // error message should be a developer-facing English message that helps
-// developers *understand* and *resolve* the error. If a localized greet-facing
+// developers *understand* and *resolve* the error. If a localized greeter-facing
 // error message is needed, put the localized message in the error details or
 // localize it in the client. The optional error details may contain arbitrary
 // information about the error. There is a predefined set of error detail types
@@ -82,7 +82,7 @@ message Status {
   int32 code = 1;
 
   // A developer-facing error message, which should be in English. Any
-  // greet-facing error message should be localized and sent in the
+  // greeter-facing error message should be localized and sent in the
   // [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
   string message = 2;
 

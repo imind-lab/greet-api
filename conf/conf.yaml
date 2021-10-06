@@ -56,8 +56,8 @@ kafka:
     consumer:
       - 'kafka.infra:9092'
     topic:
-      createGreet: create_greet
-      updateGreetCount: update_greet_count
+      createGreeter: create_greeter
+      updateGreeterCount: update_greeter_count
 
   bigdata:
     producer:
@@ -65,16 +65,16 @@ kafka:
     consumer:
       - 'kafka.infra:9092'
     topic:
-      createGreet: create_greet
-      updateGreetCount: update_greet_count
+      createGreeter: create_greeter
+      updateGreeterCount: update_greeter_count
 
 tracing:
   agent: '172.16.50.50:6831'
   type: const
   param: 1
   name:
-    client: imind-greet-api-cli
-    server: imind-greet-api-srv
+    client: imind-greeter-api-cli
+    server: imind-greeter-api-srv
 
 log:
   path: './logs/ms.log'
@@ -85,6 +85,6 @@ log:
   compress: true
   format: json
 rpc:
-  greet:
-    service: greet
+  greeter:
+    service: greeter
     port: 50051

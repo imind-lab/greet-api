@@ -14,8 +14,8 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
-	greet_api "github.com/imind-lab/greet-api/server/proto/greet-api"
-	"github.com/imind-lab/greet-api/server/service"
+	greeter_api "github.com/imind-lab/greeter-api/server/proto/greeter-api"
+	"github.com/imind-lab/greeter-api/server/service"
 	"github.com/imind-lab/micro"
 	"github.com/imind-lab/micro/grpcx"
 )
@@ -30,14 +30,14 @@ func Serve() error {
 		micro.ClientCred(grpcCred.ClientCred()))
 
 	grpcSrv := svc.GrpcServer()
-	greet_api.RegisterGreetServiceServer(grpcSrv, service.NewGreetService(svc.Options().Logger))
+	greeter_api.RegisterGreeterServiceServer(grpcSrv, service.NewGreeterService(svc.Options().Logger))
 
 	// 注册gRPC-Gateway
 	endPoint := fmt.Sprintf(":%d", viper.GetInt("service.port.grpc"))
 
 	mux := svc.ServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(grpcCred.ClientCred())}
-	err := greet_api.RegisterGreetServiceHandlerFromEndpoint(svc.Options().Context, mux, endPoint, opts)
+	err := greeter_api.RegisterGreeterServiceHandlerFromEndpoint(svc.Options().Context, mux, endPoint, opts)
 	if err != nil {
 		return err
 	}
