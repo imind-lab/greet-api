@@ -9,15 +9,15 @@ package server
 
 import (
 	"fmt"
+	"github.com/imind-lab/greeter-api/application/greeter-api/proto"
+	"github.com/imind-lab/greeter-api/application/greeter-api/service"
 	_ "net/http/pprof"
 
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
-	greeter_api "github.com/imind-lab/greeter-api/server/proto/greeter-api"
-	"github.com/imind-lab/greeter-api/server/service"
 	"github.com/imind-lab/micro"
-	"github.com/imind-lab/micro/grpcx"
+	grpcx "github.com/imind-lab/micro/grpc"
 )
 
 func Serve() error {
