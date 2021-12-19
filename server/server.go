@@ -9,13 +9,13 @@ package server
 
 import (
 	"fmt"
-	"github.com/imind-lab/greeter-api/application/greeter-api/proto"
-	"github.com/imind-lab/greeter-api/application/greeter-api/service"
 	_ "net/http/pprof"
 
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
+	"github.com/imind-lab/greeter-api/application/greeter-api/proto"
+	"github.com/imind-lab/greeter-api/application/greeter-api/service"
 	"github.com/imind-lab/micro"
 	grpcx "github.com/imind-lab/micro/grpc"
 )
