@@ -1,0 +1,2 @@
+{"level":"info","time":"2022-02-12T21:43:21.328+0800","linenum":"micro/micro.go:271","msg":"HttpServer is running[::]:88","namespace":"micro","service":"greeter-api"}
+{"level":"info","time":"2022-02-12T21:43:21.328+0800","linenum":"micro/micro.go:261","msg":"GrpcServer is running[::]:50051","namespace":"micro","service":"greeter-api"}

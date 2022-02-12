@@ -5,7 +5,8 @@ gengo:
 	protoc -I. --proto_path ../application/greeter-api/proto --proto_path ../pkg/proto \
  --go_out ../application/greeter-api/proto --go_opt paths=source_relative --go-grpc_out ../application/greeter-api/proto --go-grpc_opt paths=source_relative \
  --grpc-gateway_out ../application/greeter-api/proto --grpc-gateway_opt logtostderr=true --grpc-gateway_opt paths=source_relative --grpc-gateway_opt generate_unbound_methods=true greeter-api.proto
-	protoc-go-inject-tag -input=../application/greeter-api/proto/greeter-api.pb.go
+	@microctl inject --path=../application/greeter-api/proto/greeter-api.pb.go
+	@sed -i '' 's/,omitempty//g' ../application/greeter-api/proto/greeter-api.pb.go
 
 depend:
 	go get ../...

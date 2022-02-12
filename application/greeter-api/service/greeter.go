@@ -10,6 +10,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/imind-lab/micro/status"
 	"io"
 	"strconv"
 	"sync"
@@ -52,7 +53,7 @@ func (svc *GreeterService) CreateGreeter(ctx context.Context, req *greeter_api.C
 
 	rsp := &greeter_api.CreateGreeterResponse{}
 
-	m := req.Dto
+	m := req.Data
 	fmt.Println("Dto", m)
 	err := svc.validate.Struct(req)
 	if err != nil {
@@ -80,11 +81,9 @@ func (svc *GreeterService) CreateGreeter(ctx context.Context, req *greeter_api.C
 	err = svc.validate.Var(m, "required")
 	fmt.Println("validate", err)
 	if m == nil {
-		logger.Error("Greeter不能为空", zap.Any("params", m))
+		logger.Error("Data不能为空", zap.Any("params", m))
 
-		err := &greeter_api.Error{}
-		err.Message = "Greeter不能为空"
-		rsp.Error = err
+		rsp.SetCode(status.MissingParams, "Data不能为空")
 		return rsp, nil
 	}
 
@@ -92,10 +91,7 @@ func (svc *GreeterService) CreateGreeter(ctx context.Context, req *greeter_api.C
 	fmt.Println("validate", m.Name, err)
 	if len(m.Name) == 0 {
 		logger.Error("Name不能为空", zap.Any("name", m.Name))
-
-		err := &greeter_api.Error{}
-		err.Message = "Name不能为空"
-		rsp.Error = err
+		rsp.SetCode(status.InvalidParams, "Name不能为空")
 		return rsp, nil
 	}
 
@@ -114,26 +110,19 @@ func (svc *GreeterService) CreateGreeter(ctx context.Context, req *greeter_api.C
 	greeterCli, err := greeterClient.New(ctx)
 	if err != nil {
 		logger.Error("服务器繁忙，请稍候再试", zap.Any("greeterCli", greeterCli), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.SystemError, "Name不能为空")
 		return rsp, nil
 	}
-	greeterSrv := GreeterGw2Srv(req.Dto)
+	greeterSrv := GreeterGw2Srv(req.Data)
 	resp, err := greeterCli.CreateGreeter(ctx, &greeter.CreateGreeterRequest{
-		Dto: greeterSrv,
+		Data: greeterSrv,
 	})
 	if err != nil {
 		logger.Error("greeterCli.CreateGreeter error", zap.Any("greeter", m), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "创建Greeter失败"
-		rsp.Error = err
+		rsp.SetCode(status.DBSaveFailed, "创建Greeter失败")
 		return rsp, nil
 	}
-
-	rsp.Error = ErrorSrv2Gw(resp.Error)
+	rsp.SetCode(status.Code(resp.Code), resp.Message)
 	return rsp, nil
 }
 
@@ -158,20 +147,14 @@ func (svc *GreeterService) GetGreeterById(ctx context.Context, req *greeter_api.
 	greeterCli, err := greeterClient.New(ctx)
 	if err != nil {
 		logger.Error("greeterClient.New error", zap.Any("greeterCli", greeterCli), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.SystemError, "服务器繁忙，请稍候再试")
 		return rsp, nil
 	}
 
 	sentinelEntry, blockError := sentinel.Entry("test1")
 	if blockError != nil {
 		logger.Error("触发熔断降级", zap.Any("TriggeredRule", blockError.TriggeredRule()), zap.Any("TriggeredValue", blockError.TriggeredValue()))
-
-		err := &greeter_api.Error{}
-		err.Message = "获取Greeter失败"
-		rsp.Error = err
+		rsp.SetCode(status.CircuitBroke, "获取Greeter失败")
 		return rsp, nil
 	}
 	defer sentinelEntry.Exit()
@@ -182,18 +165,12 @@ func (svc *GreeterService) GetGreeterById(ctx context.Context, req *greeter_api.
 	ctxzap.Debug(ctx, "greeterCli.GetGreeterById", zap.Any("resp", resp), zap.Error(err))
 	if err != nil {
 		logger.Error("greeterCli.GetGreeterById error", zap.Any("resp", resp), zap.Error(err))
-
 		sentinelEntry.SetError(err)
-
-		err := &greeter_api.Error{}
-		err.Message = "获取Greeter失败"
-		rsp.Error = err
+		rsp.SetCode(status.DBQueryFailed, "获取Greeter失败")
 		return rsp, nil
 	}
 
-	rsp.Dto = GreeterSrv2Gw(resp.Dto)
-	rsp.Error = ErrorSrv2Gw(resp.Error)
-
+	rsp.SetBody(status.Code(resp.Code), GreeterSrv2Gw(resp.Data))
 	return rsp, nil
 }
 
@@ -229,9 +206,7 @@ func (svc *GreeterService) GetGreeterList(ctx context.Context, req *greeter_api.
 	rateEntry, rateError := sentinel.Entry("abcd", sentinel.WithTrafficType(base.Inbound))
 	if rateError != nil {
 		ctxzap.Debug(ctx, "GetGreeterList限流了")
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.Throttled, "服务器繁忙，请稍候再试")
 		return rsp, nil
 	}
 	defer rateEntry.Exit()
@@ -250,10 +225,7 @@ func (svc *GreeterService) GetGreeterList(ctx context.Context, req *greeter_api.
 	greeterCli, err := greeterClient.New(ctx)
 	if err != nil {
 		logger.Error("greeterClient.New error", zap.Any("greeterCli", greeterCli), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.SystemError, "服务器繁忙，请稍候再试")
 		return rsp, nil
 	}
 
@@ -265,14 +237,11 @@ func (svc *GreeterService) GetGreeterList(ctx context.Context, req *greeter_api.
 	})
 	if err != nil {
 		logger.Error("greeterCli.GetGreeterList error", zap.Any("resp", resp), zap.Error(err))
-		err := &greeter_api.Error{}
-		err.Message = "获取GreeterList失败"
-		rsp.Error = err
+		rsp.SetCode(status.DBQueryFailed, "获取GreeterList失败")
 		return rsp, nil
 	}
 
-	rsp.Data = GreeterListSrv2Gw(resp.Data)
-	rsp.Error = ErrorSrv2Gw(resp.Error)
+	rsp.SetBody(status.Code(resp.Code), GreeterListSrv2Gw(resp.Data))
 	return rsp, nil
 }
 
@@ -297,10 +266,7 @@ func (svc *GreeterService) UpdateGreeterStatus(ctx context.Context, req *greeter
 	greeterCli, err := greeterClient.New(ctx)
 	if err != nil {
 		logger.Error("greeterClient.New error", zap.Any("greeterCli", greeterCli), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.SystemError, "服务器繁忙，请稍候再试")
 		return rsp, nil
 	}
 
@@ -310,15 +276,10 @@ func (svc *GreeterService) UpdateGreeterStatus(ctx context.Context, req *greeter
 	})
 	if err != nil {
 		logger.Error("greeterCli.UpdateGreeterStatus error", zap.Any("resp", resp), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "更新Greeter失败"
-		rsp.Error = err
+		rsp.SetCode(status.DBSaveFailed, "更新Greeter失败")
 		return rsp, nil
 	}
-
-	rsp.Error = ErrorSrv2Gw(resp.Error)
-
+	rsp.SetCode(status.Code(resp.Code), resp.Message)
 	return rsp, nil
 }
 
@@ -343,10 +304,7 @@ func (svc *GreeterService) UpdateGreeterCount(ctx context.Context, req *greeter_
 	greeterCli, err := greeterClient.New(ctx)
 	if err != nil {
 		logger.Error("greeterClient.New error", zap.Any("greeterCli", greeterCli), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.SystemError, "服务器繁忙，请稍候再试")
 		return rsp, nil
 	}
 
@@ -357,15 +315,11 @@ func (svc *GreeterService) UpdateGreeterCount(ctx context.Context, req *greeter_
 	})
 	if err != nil {
 		logger.Error("greeterCli.UpdateGreeterCount error", zap.Any("resp", resp), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "更新Greeter失败"
-		rsp.Error = err
+		rsp.SetCode(status.DBSaveFailed, "更新Greeter失败")
 		return rsp, nil
 	}
 
-	rsp.Error = ErrorSrv2Gw(resp.Error)
-
+	rsp.SetCode(status.Code(resp.Code), resp.Message)
 	return rsp, nil
 }
 
@@ -391,9 +345,7 @@ func (svc *GreeterService) DeleteGreeterById(ctx context.Context, req *greeter_a
 	if err != nil {
 		logger.Error("greeterClient.New error", zap.Any("greeterCli", greeterCli), zap.Error(err))
 
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.SystemError, "服务器繁忙，请稍候再试")
 		return rsp, nil
 	}
 
@@ -403,13 +355,11 @@ func (svc *GreeterService) DeleteGreeterById(ctx context.Context, req *greeter_a
 	if err != nil {
 		logger.Error("greeterCli.DeleteGreeterById error", zap.Any("resp", resp), zap.Error(err))
 
-		err := &greeter_api.Error{}
-		err.Message = "删除Greeter失败"
-		rsp.Error = err
+		rsp.SetCode(status.DBSaveFailed, "删除Greeter失败")
 		return rsp, nil
 	}
 
-	rsp.Error = ErrorSrv2Gw(resp.Error)
+	rsp.SetCode(status.Code(resp.Code), resp.Message)
 
 	return rsp, nil
 }
@@ -435,9 +385,7 @@ func (svc *GreeterService) GetGreeterListByIds(ctx context.Context, req *greeter
 	if err != nil {
 		logger.Error("greeterClient.New error", zap.Any("greeterCli", greeterCli), zap.Error(err))
 
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.SystemError, "服务器繁忙，请稍候再试")
 		return rsp, nil
 	}
 
@@ -446,10 +394,7 @@ func (svc *GreeterService) GetGreeterListByIds(ctx context.Context, req *greeter
 	streamClient, err := greeterCli.GetGreeterListByStream(ctx)
 	if err != nil {
 		logger.Error("greeterCli.GetGreeterListByStream error", zap.Any("streamClient", streamClient), zap.Error(err))
-
-		err := &greeter_api.Error{}
-		err.Message = "服务器繁忙，请稍候再试"
-		rsp.Error = err
+		rsp.SetCode(status.SystemError, "服务器繁忙，请稍候再试")
 		return rsp, nil
 	}
 

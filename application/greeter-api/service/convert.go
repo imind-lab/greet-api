@@ -67,15 +67,3 @@ func GreeterListSrv2Gw(dto *greeter.GreeterList) *greeter_api.GreeterList {
 
 	return po
 }
-
-func ErrorSrv2Gw(err *greeter.Error) *greeter_api.Error {
-	if err == nil {
-		return nil
-	}
-
-	po := &greeter_api.Error{}
-	po.Message = err.Message
-	po.Code = err.Code
-
-	return po
-}

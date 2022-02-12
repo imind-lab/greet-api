@@ -52,20 +52,24 @@ service GreeterService {
 
 message CreateGreeterRequest {
     // @inject_tag: validate:"required"
-    Greeter dto = 1;
+    Greeter data = 1;
 }
 
+// @inject_response CreateGreeterResponse
 message CreateGreeterResponse {
-    Error error = 1;
+    int32 code = 1;
+    string message = 2;
 }
 
 message GetGreeterByIdRequest {
     int32 id = 1;
 }
 
+// @inject_response GetGreeterByIdResponse *Greeter data
 message GetGreeterByIdResponse {
-    Error error = 1;
-    Greeter dto = 2;
+    int32 code = 1;
+    string message = 2;
+    Greeter data = 3;
 }
 
 message GetGreeterListRequest {
@@ -77,9 +81,11 @@ message GetGreeterListRequest {
     int32 page = 4;
 }
 
+// @inject_response GetGreeterListResponse *GreeterList data
 message GetGreeterListResponse {
-    Error error = 1;
-    GreeterList data = 2;
+    int32 code = 1;
+    string message = 2;
+    GreeterList data = 3;
 }
 
 message UpdateGreeterStatusRequest {
@@ -87,8 +93,10 @@ message UpdateGreeterStatusRequest {
     int32 status = 2;
 }
 
+// @inject_response UpdateGreeterStatusResponse
 message UpdateGreeterStatusResponse {
-    Error error = 1;
+    int32 code = 1;
+    string message = 2;
 }
 
 message UpdateGreeterCountRequest {
@@ -97,16 +105,20 @@ message UpdateGreeterCountRequest {
     string column = 3;
 }
 
+// @inject_response UpdateGreeterCountResponse
 message UpdateGreeterCountResponse {
-    Error error = 1;
+    int32 code = 1;
+    string message = 2;
 }
 
 message DeleteGreeterByIdRequest {
     int32 id = 1;
 }
 
+// @inject_response DeleteGreeterByIdResponse
 message DeleteGreeterByIdResponse {
-    Error error = 1;
+    int32 code = 1;
+    string message = 2;
 }
 
 message Greeter {
@@ -132,12 +144,9 @@ message GetGreeterListByIdsRequest {
     repeated int32 ids = 1;
 }
 
+// @inject_response GetGreeterListByIdsResponse []*Greeter data
 message GetGreeterListByIdsResponse {
-    Error error = 1;
-    repeated Greeter data = 2;
-}
-
-message Error {
     int32 code = 1;
     string message = 2;
+    repeated Greeter data = 3;
 }

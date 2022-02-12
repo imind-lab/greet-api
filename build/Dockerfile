@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/imind-lab/greeter-api/
 COPY . .
 RUN go get ./...
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -o greeter main.go
-RUN go get github.com/grpc-ecosystem/grpc-health-probe && go install github.com/grpc-ecosystem/grpc-health-probe
+RUN go install github.com/grpc-ecosystem/grpc-health-probe
 
 
 FROM alpine:latest

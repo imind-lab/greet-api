@@ -1,72 +1,11 @@
 service:
-  port:   #监听端口
+  namespace: micro
+  name: greeter-api
+  port: #监听端口
     http: 88
-    grpc: 50052
+    grpc: 50051
   profile:
     rate: 1
-
-db:
-  hr:
-    write:
-      host: mysql.infra
-      port: 3306
-      user: root
-      pass: a1DEYaA4dn
-      name: hr
-    read:
-      - host: mysql.infra
-        port: 3306
-        user: root
-        pass: a1DEYaA4dn
-        name: hr
-      - host: mysql.infra
-        port: 3306
-        user: root
-        pass: a1DEYaA4dn
-        name: hr
-
-  bbs:
-    write:
-      host: mysql.infra
-      port: 3306
-      user: root
-      pass: a1DEYaA4dn
-      name: bbs
-    read:
-      - host: mysql.infra
-        port: 3306
-        user: root
-        pass: a1DEYaA4dn
-        name: bbs
-      - host: mysql.infra
-        port: 3306
-        user: root
-        pass: a1DEYaA4dn
-        name: bbs
-
-redis:
-  addr: 'redis-master.infra:6379'
-  pass: ''
-  db: 0
-
-kafka:
-  business:
-    producer:
-      - 'kafka.infra:9092'
-    consumer:
-      - 'kafka.infra:9092'
-    topic:
-      createGreeter: create_greeter
-      updateGreeterCount: update_greeter_count
-
-  bigdata:
-    producer:
-      - 'kafka.infra:9092'
-    consumer:
-      - 'kafka.infra:9092'
-    topic:
-      createGreeter: create_greeter
-      updateGreeterCount: update_greeter_count
 
 tracing:
   agent: '172.16.50.50:6831'
